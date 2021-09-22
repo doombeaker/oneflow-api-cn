@@ -34,3 +34,8 @@ jobs:
         run: |
           git submodule update --init --recursive
           python3 setup.py install --user
+          
+      - name: DocTest
+        run: |
+          cd docs && make test_cn
+          make html_cn SPHINXOPTS="-W --keep-going"
