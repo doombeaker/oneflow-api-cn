@@ -37,4 +37,4 @@ jobs:
       
       - name: Install docreset
         run: |
-          python3 setup.py install --users
+          python3 setup.py install --user
