@@ -2,7 +2,7 @@
 <html class="no-js">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="oneflow.linalg" href="linalg.html" /><link rel="prev" title="oneflow.nn.Module" href="module.html" />
+    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="oneflow.nn.image" href="image.html" /><link rel="prev" title="oneflow.nn.Module" href="module.html" />
 
     <meta name="generator" content="sphinx-3.5.4, furo 2021.04.11.beta34"/>
         <title>oneflow.nn.Graph - OneFlow documentation</title>
@@ -37,7 +37,8 @@
   --color-code-foreground: #d0d0d0;
   
   }
-</style><link rel="stylesheet" href="_static/styles/furo-extensions.css?digest=d391b54134226e4196576da3bdb6dddb7e05ba2b"></head>
+</style><link rel="stylesheet" type="text/css" href="_static/copybutton.css" />
+    <link rel="stylesheet" href="_static/styles/furo-extensions.css?digest=d391b54134226e4196576da3bdb6dddb7e05ba2b"></head>
   <body dir="">
     
 <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
@@ -114,17 +115,22 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="oneflow.html">oneflow</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tensor.html">oneflow.Tensor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tensor_attributes.html">Tensor Attributes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="nn.html">oneflow.nn</a></li>
 <li class="toctree-l1"><a class="reference internal" href="functional.html">oneflow.nn.functional</a></li>
-<li class="toctree-l1"><a class="reference internal" href="module.html">oneflow.nn.Module</a></li>
-<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">oneflow.nn.Graph</a></li>
-<li class="toctree-l1"><a class="reference internal" href="linalg.html">oneflow.linalg</a></li>
-<li class="toctree-l1"><a class="reference internal" href="image.html">oneflow.nn.image</a></li>
-<li class="toctree-l1"><a class="reference internal" href="optim.html">oneflow.optim</a></li>
-<li class="toctree-l1"><a class="reference internal" href="utils.html">oneflow.utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="autograd.html">oneflow.autograd</a></li>
 <li class="toctree-l1"><a class="reference internal" href="cuda.html">oneflow.cuda</a></li>
 <li class="toctree-l1"><a class="reference internal" href="distributed.html">oneflow.distributed</a></li>
+<li class="toctree-l1"><a class="reference internal" href="linalg.html">oneflow.linalg</a></li>
+<li class="toctree-l1"><a class="reference internal" href="nn.init.html">oneflow.nn.init</a></li>
+<li class="toctree-l1"><a class="reference internal" href="optim.html">oneflow.optim</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module.html">oneflow.nn.Module</a></li>
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">oneflow.nn.Graph</a></li>
+<li class="toctree-l1"><a class="reference internal" href="image.html">oneflow.nn.image</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.html">oneflow.utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="env.html">oneflow.env</a></li>
 <li class="toctree-l1"><a class="reference internal" href="comm.html">oneflow.comm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="one_embedding.html">oneflow.one_embedding</a></li>
 </ul>
 
 </div>
@@ -141,56 +147,58 @@
         </label>
         <div class="section" id="oneflow-nn-graph">
 <h1>oneflow.nn.Graph<a class="headerlink" href="#oneflow-nn-graph" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="base-class-for-running-neural-networks-in-graph-mode">
-<h2>Base class for running neural networks in Graph Mode.<a class="headerlink" href="#base-class-for-running-neural-networks-in-graph-mode" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="base-class-for-running-neural-networks-in-static-graph-mode">
+<h2>Base class for running neural networks in Static Graph Mode.<a class="headerlink" href="#base-class-for-running-neural-networks-in-static-graph-mode" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
 <dt id="oneflow.nn.Graph">
 <em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">oneflow.nn.</span></code><code class="sig-name descname"><span class="pre">Graph</span></code><a class="headerlink" href="#oneflow.nn.Graph" title="Permalink to this definition">¶</a></dt>
-<dd><p>Base class for training or evaluating a neural network in graph mode.</p>
-<p>To use graph mode for model training or evaluation in OneFlow, you should:</p>
+<dd><p>在 Graph 模块下训练和测试一个神经网络的基类。</p>
+<p>要在 OneFlow 中使用 Graph 模块进行模型训练或测试，你应该：</p>
 <ol class="arabic simple">
-<li><p>Define your customized graph as a subclass of <code class="docutils literal notranslate"><span class="pre">nn.Graph</span></code>.</p></li>
-<li><p>Add <code class="docutils literal notranslate"><span class="pre">super().__init__()</span></code> in your subclass’s <code class="docutils literal notranslate"><span class="pre">__init__()</span></code>.</p></li>
-<li><p>Add modules to your graph as regular attributes.</p></li>
-<li><p>Define computation logical in <code class="docutils literal notranslate"><span class="pre">build()</span></code> method.</p></li>
-<li><p>Instantiate your graph then call it.</p></li>
+<li><p>将你的自定义 Graph 定义为 <code class="docutils literal notranslate"><span class="pre">nn.Graph</span></code> 的子类。</p></li>
+<li><p>在子类 <code class="docutils literal notranslate"><span class="pre">__init__()</span></code> 中添加 <code class="docutils literal notranslate"><span class="pre">super().__init__()</span></code> 。</p></li>
+<li><p>将模块作为常规属性添加到 Graph 中。</p></li>
+<li><p>在 <code class="docutils literal notranslate"><span class="pre">build()</span></code> 函数中定义计算逻辑。</p></li>
+<li><p>将 Graph 实例化并调用它。</p></li>
 </ol>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">oneflow</span> <span class="kn">as</span> <span class="nn">flow</span>
 
 <span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">LinearGraph</span><span class="p">(</span><span class="n">flow</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Graph</span><span class="p">):</span>
 <span class="gp">... </span>   <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="gp">... </span>       <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
-<span class="gp">... </span>       <span class="c1"># Add a module to the graph.</span>
+<span class="gp">... </span>       <span class="c1"># 向 Graph 中添加一个模块。</span>
 <span class="gp">... </span>       <span class="bp">self</span><span class="o">.</span><span class="n">linear</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="bp">False</span><span class="p">)</span>
 <span class="gp">... </span>   <span class="k">def</span> <span class="nf">build</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
-<span class="gp">... </span>       <span class="c1"># Use the module to build the computation logic of the graph.</span>
+<span class="gp">... </span>       <span class="c1"># 使用该模块构建 Graph 的计算逻辑。</span>
 <span class="gp">... </span>       <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">linear</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 
-<span class="go"># Instantiate the graph</span>
+<span class="go"># 将 Graph 实例化。</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">linear_graph</span> <span class="o">=</span> <span class="n">LinearGraph</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
 
-<span class="go"># First call on graph will run graph's build() method to</span>
-<span class="go"># trace a computatioin graph. Then the computation graph will be</span>
-<span class="go"># optimized and executed for the first time.</span>
+<span class="go"># 第一次调用 Graph 将运行 graphs build() 函数来跟踪计算图。</span>
+<span class="go"># 计算图将首次执行并被优化。</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">linear_graph</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">shape</span>
 <span class="go">oneflow.Size([4, 8])</span>
 
-<span class="go"># Later call on graph will execute the computation graph directly.</span>
+<span class="go"># 然后调用 Graph 将直接运行计算图。</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">linear_graph</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">shape</span>
 <span class="go">oneflow.Size([4, 8])</span>
 </pre></div>
 </div>
-<p>Note that Graph cannot be nested at the moment.</p>
+<dl class="simple">
+<dt>请注意：</dt><dd><p>Graph 目前不可以进行嵌套。</p>
+</dd>
+</dl>
 <dl class="py method">
 <dt id="oneflow.nn.Graph.__init__">
 <code class="sig-name descname"><span class="pre">__init__</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#oneflow.nn.Graph.__init__" title="Permalink to this definition">¶</a></dt>
-<dd><p>Initializes internal Graph states. It MUST be called in <code class="docutils literal notranslate"><span class="pre">__init__</span></code> method of subclass.</p>
+<dd><p>初始化 Graph 的内部状态。 它必须在子类的 <code class="docutils literal notranslate"><span class="pre">__init__</span></code> 函数中调用。</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">oneflow</span> <span class="kn">as</span> <span class="nn">flow</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">SubclassGraph</span><span class="p">(</span><span class="n">flow</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Graph</span><span class="p">):</span>
 <span class="gp">... </span>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="gp">... </span>        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span> <span class="c1"># MUST be called</span>
-<span class="gp">... </span>        <span class="c1"># Then define the graph attributes</span>
+<span class="gp">... </span>        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span> <span class="c1"># 必须定义此函数</span>
+<span class="gp">... </span>        <span class="c1"># 然后定义 Graph 的属性</span>
 <span class="gp">... </span>    <span class="k">def</span> <span class="nf">build</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="gp">... </span>        <span class="k">pass</span>
 </pre></div>
@@ -198,17 +206,11 @@
 </dd></dl>
 <dl class="py method">
 <dt id="oneflow.nn.Graph.build">
-<code class="sig-name descname"><span class="pre">build</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#oneflow.nn.Graph.build" title="Permalink to this definition">¶</a></dt>
-<dd><p>The <code class="docutils literal notranslate"><span class="pre">build()</span></code> method must be overridden to define neural network
-computaion logic.</p>
-<p>The <code class="docutils literal notranslate"><span class="pre">build()</span></code> method of nn.Graph is very similar to the <code class="docutils literal notranslate"><span class="pre">forward()</span></code>
-method of nn.Module. It is used to describe the computatioin logical of
-a neural network.</p>
-<p>When a graph object being called for the first time, the <code class="docutils literal notranslate"><span class="pre">build()</span></code>
-method will be called implicitly to build the computatioin graph.</p>
-<p>Make sure to call modules’s <code class="docutils literal notranslate"><span class="pre">train()</span></code> or <code class="docutils literal notranslate"><span class="pre">eval()</span></code> method before the
-first call of your graph to make the module executing the right
-training or evaluation logic if needed.</p>
+<code class="sig-name descname"><span class="pre">build</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#oneflow.nn.Graph.build" title="Permalink to this definition">¶</a></dt>
+<dd><p>必须重写 <code class="docutils literal notranslate"><span class="pre">build()</span></code> 函数来定义神经网络计算逻辑。</p>
+<p>nn.Graph 中的 <code class="docutils literal notranslate"><span class="pre">build()</span></code> 函数与 nn.Module 中的 <code class="docutils literal notranslate"><span class="pre">forward()</span></code> 函数非常相似。它是用来描述神经网络的计算逻辑。</p>
+<p>当第一次调用 Graph 对象时，会隐式调用 <code class="docutils literal notranslate"><span class="pre">build()</span></code> 函数来构建计算图。</p>
+<p>确保在第一次调用 Graph 之前先调用模块中的 <code class="docutils literal notranslate"><span class="pre">train()</span></code> 或 <code class="docutils literal notranslate"><span class="pre">eval()</span></code> 函数，以使 Graph 执行正确的训练或测试模式。</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">oneflow</span> <span class="kn">as</span> <span class="nn">flow</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">MyGraph</span><span class="p">(</span><span class="n">flow</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Graph</span><span class="p">):</span>
 <span class="gp">... </span>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -219,36 +221,53 @@ training or evaluation logic if needed.</p>
 
 <span class="gp">&gt;&gt;&gt; </span><span class="n">linear_graph</span> <span class="o">=</span> <span class="n">MyGraph</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">y</span> <span class="o">=</span> <span class="n">linear_graph</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="c1"># The build() method is called implicitly</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">y</span> <span class="o">=</span> <span class="n">linear_graph</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="c1"># 隐式调用 build() 函数</span>
 </pre></div>
 </div>
-<p>Note that <code class="docutils literal notranslate"><span class="pre">build()</span></code> method’s inputs and outputs only accept positional
-arguements at the moment, each argument must be one of these types:</p>
+<dl class="simple">
+<dt>请注意:</dt><dd><p><code class="docutils literal notranslate"><span class="pre">build()</span></code> 函数的输入和输出目前支持列表/元组/字典，但其中的对象必须是以下类型之一：</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">Tensor</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">list</span></code> of <code class="docutils literal notranslate"><span class="pre">Tensor</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p></li>
 </ul>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt id="oneflow.nn.Graph.__call__">
+<code class="sig-name descname"><span class="pre">__call__</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#oneflow.nn.Graph.__call__" title="Permalink to this definition">¶</a></dt>
+<dd><p>调用 nn.Graph 子类实例来运行你的自定义 Graph 。</p>
+<p>实例化后调用 Graph ：</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">g</span> <span class="o">=</span> <span class="n">CustomGraph</span><span class="p">()</span>
+<span class="n">out_tensors</span> <span class="o">=</span> <span class="n">g</span><span class="p">(</span><span class="n">input_tensors</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">__call__</span></code> 函数的输入必须与 <code class="docutils literal notranslate"><span class="pre">build()</span></code> 函数的输入相匹配。
+<code class="docutils literal notranslate"><span class="pre">__call__</span></code> 函数将会返回与 <code class="docutils literal notranslate"><span class="pre">build()</span></code> 函数输出相匹配的输出。</p>
+<dl>
+<dt>请注意:</dt><dd><p>第一次调用会比之后的调用花费时间更长，因为 nn.Graph 在第一次调用时会进行计算图的生成和优化。</p>
+<p>请不要覆盖此函数。</p>
+</dd>
+</dl>
 </dd></dl>
 <dl class="py method">
 <dt id="oneflow.nn.Graph.add_optimizer">
-<code class="sig-name descname"><span class="pre">add_optimizer</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">optim</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">oneflow.nn.optimizer.optimizer.Optimizer</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lr_sch</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">oneflow.nn.optimizer.lr_scheduler.LrScheduler</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#oneflow.nn.Graph.add_optimizer" title="Permalink to this definition">¶</a></dt>
-<dd><p>Add an optimizer, an learning rate scheduler to the graph.</p>
-<p>To do training with nn.Graph, you should do 2 more things:</p>
+<code class="sig-name descname"><span class="pre">add_optimizer</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">optim</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">oneflow.nn.optimizer.optimizer.Optimizer</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lr_sch</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">oneflow.nn.optimizer.lr_scheduler.LRScheduler</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_sparse</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#oneflow.nn.Graph.add_optimizer" title="Permalink to this definition">¶</a></dt>
+<dd><p>向 Graph 中添加一个优化器，一个学习率调整器。</p>
+<p>要使用 nn.Graph 进行训练，你应该再做 2 件事：</p>
 <ol class="arabic simple">
-<li><p>Add at least one optimier(learning rate schedulers are optional) with <code class="docutils literal notranslate"><span class="pre">add_optimizer()</span></code> method.</p></li>
-<li><p>Call loss tensor’s <code class="docutils literal notranslate"><span class="pre">backward()</span></code> method in <code class="docutils literal notranslate"><span class="pre">build()</span></code> method.</p></li>
+<li><p>使用 <code class="docutils literal notranslate"><span class="pre">add_optimizer()</span></code> 函数添加至少一个优化器（ 学习率调整器是可选的 ）。</p></li>
+<li><p>在 <code class="docutils literal notranslate"><span class="pre">build()</span></code> 函数中调用 loss tensor 的 <code class="docutils literal notranslate"><span class="pre">backward()</span></code> 函数。</p></li>
 </ol>
-<p>Note that the computaion graph will automatically execute these methods:</p>
+<p>请注意，计算图将自动执行这些方法：</p>
 <ul class="simple">
-<li><p>optimizer’s <code class="docutils literal notranslate"><span class="pre">clip_grad()</span></code> if a optimizer is set to do grad cliping.</p></li>
-<li><p>optimizer’s <code class="docutils literal notranslate"><span class="pre">step()</span></code>.</p></li>
-<li><p>optimizer’s <code class="docutils literal notranslate"><span class="pre">zero_grad()</span></code>.</p></li>
-<li><p>learn rate scheduler’s <code class="docutils literal notranslate"><span class="pre">step()</span></code>.</p></li>
+<li><p>如果优化器设置为梯度裁剪，则调用 <code class="docutils literal notranslate"><span class="pre">clip_grad()</span></code> 函数。</p></li>
+<li><p>优化器的 <code class="docutils literal notranslate"><span class="pre">step()</span></code> 函数。</p></li>
+<li><p>优化器的 <code class="docutils literal notranslate"><span class="pre">zero_grad()</span></code> 函数。</p></li>
+<li><p>学习率调整器的 <code class="docutils literal notranslate"><span class="pre">step()</span></code> 函数。</p></li>
 </ul>
-<p>Also note that only scalar tensor are allowed to call <code class="docutils literal notranslate"><span class="pre">backward()</span></code>
-in <code class="docutils literal notranslate"><span class="pre">nn.Graph.build()</span></code> for the moment. So you may call <code class="docutils literal notranslate"><span class="pre">Tensor.sum()</span></code>
-or <code class="docutils literal notranslate"><span class="pre">Tensor.mean()</span></code> to make the loss tensor a scalar tensor.</p>
+<p>另请注意，在 <code class="docutils literal notranslate"><span class="pre">nn.Graph.build()</span></code>  中暂时只允许 <code class="docutils literal notranslate"><span class="pre">backward()</span></code> 调用标量张量。
+所以你可以调用 <code class="docutils literal notranslate"><span class="pre">Tensor.sum()</span></code> 或 <code class="docutils literal notranslate"><span class="pre">Tensor.mean()</span></code> 将损失张量变为标量张量。</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">oneflow</span> <span class="kn">as</span> <span class="nn">flow</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">loss_fn</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">MSELoss</span><span class="p">(</span><span class="n">reduction</span><span class="o">=</span><span class="s2">"sum"</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">model</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span><span class="n">flow</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">flow</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Flatten</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
@@ -258,12 +277,12 @@ or <code class="docutils literal notranslate"><span class="pre">Tensor.mean()</s
 <span class="gp">... </span>        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
 <span class="gp">... </span>        <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">model</span>
 <span class="gp">... </span>        <span class="bp">self</span><span class="o">.</span><span class="n">loss_fn</span> <span class="o">=</span> <span class="n">loss_fn</span>
-<span class="gp">... </span>        <span class="c1"># Add an optimizer</span>
+<span class="gp">... </span>        <span class="c1"># 添加一个优化器。</span>
 <span class="gp">... </span>        <span class="bp">self</span><span class="o">.</span><span class="n">add_optimizer</span><span class="p">(</span><span class="n">optimizer</span><span class="p">)</span>
 <span class="gp">... </span>    <span class="k">def</span> <span class="nf">build</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
 <span class="gp">... </span>        <span class="n">y_pred</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 <span class="gp">... </span>        <span class="n">loss</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">loss_fn</span><span class="p">(</span><span class="n">y_pred</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
-<span class="gp">... </span>        <span class="c1"># Call loss tensor's backward(), loss tensor must be a scalar tensor</span>
+<span class="gp">... </span>        <span class="c1"># 调用 loss tensor 中的 backward() 函数, loss tensor 必须是一个标量张量。</span>
 <span class="gp">... </span>        <span class="n">loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
 <span class="gp">... </span>        <span class="k">return</span> <span class="n">loss</span>
 
@@ -274,11 +293,10 @@ or <code class="docutils literal notranslate"><span class="pre">Tensor.mean()</s
 <span class="gp">... </span>    <span class="n">loss</span> <span class="o">=</span> <span class="n">linear_graph</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
 </pre></div>
 </div>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>optim</strong> (<a class="reference internal" href="optim.html#oneflow.optim.Optimizer" title="oneflow.optim.Optimizer"><em>oneflow.optim.Optimizer</em></a>) – The optimizer.</p></li>
-<li><p><strong>lr_sch</strong> – The learning rate scheduler, see oneflow.optim.lr_scheduler.</p></li>
+<dl class="simple">
+<dt>参数：</dt><dd><ul class="simple">
+<li><p><strong>optim</strong> (oneflow.optim.Optimizer) - 优化器</p></li>
+<li><p><strong>lr_sch</strong> - 学习率调整器，参见 oneflow.optim.lr_scheduler</p></li>
 </ul>
 </dd>
 </dl>
@@ -286,61 +304,420 @@ or <code class="docutils literal notranslate"><span class="pre">Tensor.mean()</s
 <dl class="py method">
 <dt id="oneflow.nn.Graph.set_grad_scaler">
 <code class="sig-name descname"><span class="pre">set_grad_scaler</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">grad_scaler</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">oneflow.amp.grad_scaler.GradScaler</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#oneflow.nn.Graph.set_grad_scaler" title="Permalink to this definition">¶</a></dt>
-<dd><p>Set the GradScaler for gradient and loss scaling.</p>
+<dd><p>为梯度和损失放缩设置 GradScaler 。</p>
 </dd></dl>
 <dl class="py method">
-<dt id="oneflow.nn.Graph.__call__">
-<code class="sig-name descname"><span class="pre">__call__</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#oneflow.nn.Graph.__call__" title="Permalink to this definition">¶</a></dt>
-<dd><p>Call nn.Graph subclass instance to run your customized graph.</p>
-<p>Call your customized graph after the instantiation:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">g</span> <span class="o">=</span> <span class="n">CustomGraph</span><span class="p">()</span>
-<span class="n">out_tensors</span> <span class="o">=</span> <span class="n">g</span><span class="p">(</span><span class="n">input_tensors</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>The inputs of <code class="docutils literal notranslate"><span class="pre">__call__</span></code> method must match the inputs of <code class="docutils literal notranslate"><span class="pre">build()</span></code>
-method. And the <code class="docutils literal notranslate"><span class="pre">__call__</span></code> method will return outputs matching the
-outputs of <code class="docutils literal notranslate"><span class="pre">build()</span></code> method.</p>
-<p>Note that the first call takes longer than later calls, because nn.Graph
-will do the computaion graph generation and optimization at the first call.</p>
-<p>Donot override this function.</p>
+<dt id="oneflow.nn.Graph.state_dict">
+<code class="sig-name descname"><span class="pre">state_dict</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">destination</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> → <span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><a class="reference internal" href="tensor.html#oneflow.Tensor" title="oneflow.Tensor"><span class="pre">oneflow.Tensor</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span> </span><a class="reference internal" href="tensor.html#oneflow.Tensor" title="oneflow.Tensor"><span class="pre">oneflow.Tensor</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><a class="headerlink" href="#oneflow.nn.Graph.state_dict" title="Permalink to this definition">¶</a></dt>
+<dd><p>返回包含 Graph 所有属性的字典。</p>
+<p>包含 Graph 中模块/优化器/学习率调整器的属性。</p>
+<p>模块属性字典的键值与它们在 Graph 中的名称相对应。
+模块属性字典的值与它们的 nn.Module 的属性字典相对应。</p>
+<p>其他键值或张量是优化器/学习率调整器等的属性。</p>
+<dl class="simple">
+<dt>返回:</dt><dd><p>一个包含 Graph 所有属性的字典。</p>
+</dd>
+<dt>返回类型：</dt><dd><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt id="oneflow.nn.Graph.load_state_dict">
+<code class="sig-name descname"><span class="pre">load_state_dict</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state_dict</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><a class="reference internal" href="tensor.html#oneflow.Tensor" title="oneflow.Tensor"><span class="pre">oneflow.Tensor</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span> </span><a class="reference internal" href="tensor.html#oneflow.Tensor" title="oneflow.Tensor"><span class="pre">oneflow.Tensor</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strict</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#oneflow.nn.Graph.load_state_dict" title="Permalink to this definition">¶</a></dt>
+<dd><p>用 <a class="reference internal" href="#oneflow.nn.Graph.state_dict" title="oneflow.nn.Graph.state_dict"><code class="xref py py-attr docutils literal notranslate"><span class="pre">state_dict</span></code></a> 复制这个模块的属性和其他 Graph 的属性到这个 Graph 中。如果 <code class="xref py py-attr docutils literal notranslate"><span class="pre">strict</span></code> 的值是 <code class="docutils literal notranslate"><span class="pre">True</span></code>， 那么 <a class="reference internal" href="#oneflow.nn.Graph.state_dict" title="oneflow.nn.Graph.state_dict"><code class="xref py py-attr docutils literal notranslate"><span class="pre">state_dict</span></code></a> 的键值必须和返回的键值通过该模块的 <code class="xref py py-meth docutils literal notranslate"><span class="pre">nn.Graph.state_dict()</span></code> 函数精确匹配。</p>
+<dl class="simple">
+<dt>参数:</dt><dd><ul class="simple">
+<li><p><strong>state_dict</strong> (dict)- 一个包含模块所有属性和其他 Graph 属性的字典。</p></li>
+<li><p><strong>strict</strong> (bool, optional)- 是否严格执行使 <a class="reference internal" href="#oneflow.nn.Graph.state_dict" title="oneflow.nn.Graph.state_dict"><code class="xref py py-attr docutils literal notranslate"><span class="pre">state_dict</span></code></a> 中的键值与在 Graph 中 <code class="xref py py-meth docutils literal notranslate"><span class="pre">nn.Graph.state_dict()</span></code> 函数返回的键值相匹配。默认值是 <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p></li>
+</ul>
+</dd>
+<dt>请注意:</dt><dd><p>nn.Graph 的属性字典只能在第一次调用 Graph 前被加载。</p>
+</dd>
+</dl>
 </dd></dl>
 <dl class="py method">
 <dt id="oneflow.nn.Graph.name">
 <em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">name</span></code><a class="headerlink" href="#oneflow.nn.Graph.name" title="Permalink to this definition">¶</a></dt>
-<dd><p>Name auto-generated for this graph.</p>
-</dd></dl>
-<dl class="py method">
-<dt id="oneflow.nn.Graph.training">
-<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">training</span></code><a class="headerlink" href="#oneflow.nn.Graph.training" title="Permalink to this definition">¶</a></dt>
-<dd><p>In traninig mode if the graph has an optimizer.</p>
+<dd><p>为该 Graph 自动生成的名称。</p>
 </dd></dl>
 <dl class="py method">
 <dt id="oneflow.nn.Graph.debug">
-<code class="sig-name descname"><span class="pre">debug</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> → <span class="pre">None</span><a class="headerlink" href="#oneflow.nn.Graph.debug" title="Permalink to this definition">¶</a></dt>
-<dd><p>Open or close debug mode of the graph.</p>
-<p>If in debug mode, logs of computation graph building will be
-printed on rank 0.</p>
+<code class="sig-name descname"><span class="pre">debug</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">v_level</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ranks</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_py_stack_depth</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">2</span></span></em><span class="sig-paren">)</span> → <span class="pre">None</span><a class="headerlink" href="#oneflow.nn.Graph.debug" title="Permalink to this definition">¶</a></dt>
+<dd><p>在 Graph 中打开或关闭 debug 模式。</p>
+<p>如果处于 debug 模式中，将打印计算图的构建信息或警告日志。 否则，只会打印错误。</p>
+<p>在 nn.Graph 中的每个 nn.Module 也有 debug() 函数使得 debug 模式得以运行。</p>
+<p>使用 <code class="docutils literal notranslate"><span class="pre">v_level</span></code> 函数来选择详细的 debug 信息级别，默认级别为 0，最大级别为 3。<code class="docutils literal notranslate"><span class="pre">v_level</span></code> 0 将打印警告和 Graph 构建过程。 <code class="docutils literal notranslate"><span class="pre">v_level</span></code> 1 将另外打印每个 nn.Module 的 Graph 构建信息。 <code class="docutils literal notranslate"><span class="pre">v_level</span></code> 2 将另外打印每个操作的 Graph 构建信息。<code class="docutils literal notranslate"><span class="pre">v_level</span></code> 3 将另外打印每个操作的更详细信息。</p>
+<p>使用 <code class="docutils literal notranslate"><span class="pre">ranks</span></code> 函数来选择要打印 debug 信息的 rank。</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">g</span> <span class="o">=</span> <span class="n">CustomGraph</span><span class="p">()</span>
-
-<span class="c1"># Open debug mode</span>
-<span class="n">g</span><span class="o">.</span><span class="n">debug</span><span class="p">()</span>
-
-<span class="n">out_tensors</span> <span class="o">=</span> <span class="n">g</span><span class="p">(</span><span class="n">input_tensors</span><span class="p">)</span>  <span class="c1"># Will print log for debug at the first call</span>
+<span class="n">g</span><span class="o">.</span><span class="n">debug</span><span class="p">()</span>  <span class="c1"># 打开 debug 模式。</span>
+<span class="n">out_tensors</span> <span class="o">=</span> <span class="n">g</span><span class="p">(</span><span class="n">input_tensors</span><span class="p">)</span>  <span class="c1"># 将在第一次调用时打印调试日志。</span>
 </pre></div>
 </div>
+<dl class="simple">
+<dt>参数：</dt><dd><ul class="simple">
+<li><p><strong>v_level</strong> (int)- 选择详细的 debug 信息级别，默认 v_level 为 0，最大 v_level 为 3。</p></li>
+<li><p><strong>ranks</strong> (int or list(int))- 选择 ranks 以打印 debug 信息， 默认 rank 为 <code class="docutils literal notranslate"><span class="pre">0</span></code> 。你可以选择任何有效的 rank 。Ranks 等于 <code class="docutils literal notranslate"><span class="pre">-1</span></code> 则表示在所有 ranks 上调试。</p></li>
+<li><p><strong>mode</strong> (bool)- 设置调试模式运行 (<code class="docutils literal notranslate"><span class="pre">True</span></code>) 或者停止 (<code class="docutils literal notranslate"><span class="pre">False</span></code>)。 默认值： <code class="docutils literal notranslate"><span class="pre">True</span></code>。</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 <dl class="py method">
 <dt id="oneflow.nn.Graph.__repr__">
 <code class="sig-name descname"><span class="pre">__repr__</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#oneflow.nn.Graph.__repr__" title="Permalink to this definition">¶</a></dt>
-<dd><p>For printing the graph structure.</p>
-<p>The graph structure can be printed after graph instantiation.</p>
-<p>After the first call of graph, inputs and outputs will be added to
-the graph structure.</p>
+<dd><p>用于打印 Graph 的结构。</p>
+<p>Graph 实例化后打印 Graph 的结构。</p>
+<p>在第一次调用 Graph 后，输入和输出都会被添加进 Graph 结构中。</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">g</span> <span class="o">=</span> <span class="n">CustomGraph</span><span class="p">()</span>
 <span class="k">print</span><span class="p">(</span><span class="n">g</span><span class="p">)</span>
 
 <span class="n">out_tensors</span> <span class="o">=</span> <span class="n">g</span><span class="p">(</span><span class="n">input_tensors</span><span class="p">)</span>
-<span class="k">print</span><span class="p">(</span><span class="n">g</span><span class="p">)</span> <span class="c1"># Inputs and Outputs infos are added</span>
+<span class="k">print</span><span class="p">(</span><span class="n">g</span><span class="p">)</span> <span class="c1"># 添加了输入和输出信息。</span>
+</pre></div>
+</div>
+</dd></dl>
+</dd></dl>
+<dl class="py class">
+<dt id="oneflow.nn.graph.graph_config.GraphConfig">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">oneflow.nn.graph.graph_config.</span></code><code class="sig-name descname"><span class="pre">GraphConfig</span></code><a class="headerlink" href="#oneflow.nn.graph.graph_config.GraphConfig" title="Permalink to this definition">¶</a></dt>
+<dd><p>For configuration of nn.Graph.</p>
+<dl class="py method">
+<dt id="oneflow.nn.graph.graph_config.GraphConfig.enable_amp">
+<code class="sig-name descname"><span class="pre">enable_amp</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#oneflow.nn.graph.graph_config.GraphConfig.enable_amp" title="Permalink to this definition">¶</a></dt>
+<dd><p>If set to true, then graph will use mixed precision mode, it means use both float16 and float32 during model training.</p>
+<p>For example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">oneflow</span> <span class="kn">as</span> <span class="nn">flow</span>
+
+<span class="k">class</span> <span class="nc">Graph</span><span class="p">(</span><span class="n">flow</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Graph</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">linear</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="bp">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">enable_amp</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span> <span class="c1"># Use mixed precision mode.</span>
+    <span class="k">def</span> <span class="nf">build</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">linear</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+<span class="n">graph</span> <span class="o">=</span> <span class="n">Graph</span><span class="p">()</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>mode</strong> (<em>bool</em><em>, </em><em>optional</em>) – The default vaule is True.</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt id="oneflow.nn.graph.graph_config.GraphConfig.allow_fuse_model_update_ops">
+<code class="sig-name descname"><span class="pre">allow_fuse_model_update_ops</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#oneflow.nn.graph.graph_config.GraphConfig.allow_fuse_model_update_ops" title="Permalink to this definition">¶</a></dt>
+<dd><p>If set to true, try to fuse cast + scale + l1_l2_regularize_gradient + model_update to one op to improve performance.</p>
+<p>For example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">oneflow</span> <span class="kn">as</span> <span class="nn">flow</span>
+
+<span class="k">class</span> <span class="nc">Graph</span><span class="p">(</span><span class="n">flow</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Graph</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">linear</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="bp">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">allow_fuse_model_update_ops</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">build</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">linear</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+<span class="n">graph</span> <span class="o">=</span> <span class="n">Graph</span><span class="p">()</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>mode</strong> (<em>bool</em><em>, </em><em>optional</em>) – The default vaule is True.</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt id="oneflow.nn.graph.graph_config.GraphConfig.allow_fuse_add_to_output">
+<code class="sig-name descname"><span class="pre">allow_fuse_add_to_output</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#oneflow.nn.graph.graph_config.GraphConfig.allow_fuse_add_to_output" title="Permalink to this definition">¶</a></dt>
+<dd><p>If set to true, try to fuse a binary element-wise add operetor to one of the predecessors to improve performance.</p>
+<p>For example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">oneflow</span> <span class="kn">as</span> <span class="nn">flow</span>
+
+<span class="k">class</span> <span class="nc">Graph</span><span class="p">(</span><span class="n">flow</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Graph</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bn1</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">BatchNorm1d</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">allow_fuse_add_to_output</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">build</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="n">bn</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bn1</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="n">bn</span> <span class="o">+</span> <span class="n">x</span>
+        <span class="k">return</span> <span class="n">out</span>
+
+<span class="n">graph</span> <span class="o">=</span> <span class="n">Graph</span><span class="p">()</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>mode</strong> (<em>bool</em><em>, </em><em>optional</em>) – The default vaule is True.</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt id="oneflow.nn.graph.graph_config.GraphConfig.allow_fuse_cast_scale">
+<code class="sig-name descname"><span class="pre">allow_fuse_cast_scale</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#oneflow.nn.graph.graph_config.GraphConfig.allow_fuse_cast_scale" title="Permalink to this definition">¶</a></dt>
+<dd><p>If set to true, try to fuse cast and scalar_mul_by_tensor to improve performance.</p>
+<p>For example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">oneflow</span> <span class="kn">as</span> <span class="nn">flow</span>
+
+<span class="k">def</span> <span class="nf">model</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">flow</span><span class="o">.</span><span class="n">mul</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">flow</span><span class="o">.</span><span class="n">cast</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">flow</span><span class="o">.</span><span class="n">int8</span><span class="p">))</span>
+
+<span class="k">class</span> <span class="nc">Graph</span><span class="p">(</span><span class="n">flow</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Graph</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">m</span><span class="o">=</span><span class="n">model</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">allow_fuse_cast_scale</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">build</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">m</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+<span class="n">graph</span> <span class="o">=</span> <span class="n">Graph</span><span class="p">()</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>mode</strong> (<em>bool</em><em>, </em><em>optional</em>) – The default vaule is True.</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt id="oneflow.nn.graph.graph_config.GraphConfig.set_gradient_accumulation_steps">
+<code class="sig-name descname"><span class="pre">set_gradient_accumulation_steps</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#oneflow.nn.graph.graph_config.GraphConfig.set_gradient_accumulation_steps" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set num of steps to accumulate gradient.</p>
+<p>For example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">oneflow</span> <span class="kn">as</span> <span class="nn">flow</span>
+
+<span class="k">class</span> <span class="nc">Graph</span><span class="p">(</span><span class="n">flow</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Graph</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">linear</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="bp">False</span><span class="p">)</span>
+        <span class="c1"># Let graph do gradient accumulation, such as pipelining parallelism depends on gradient accumulation.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">set_gradient_accumulation_steps</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">build</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">linear</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+<span class="n">graph</span> <span class="o">=</span> <span class="n">Graph</span><span class="p">()</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>value</strong> (<em>int</em>) – num of steps.</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt id="oneflow.nn.graph.graph_config.GraphConfig.set_zero_redundancy_optimizer_mode">
+<code class="sig-name descname"><span class="pre">set_zero_redundancy_optimizer_mode</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'distributed_split'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#oneflow.nn.graph.graph_config.GraphConfig.set_zero_redundancy_optimizer_mode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set mode to remove redundancy of optimizer states.
+This optimzation will reduce optimizer states memory consumption as described
+by ZeRO <a class="reference external" href="https://arxiv.org/abs/1910.02054">https://arxiv.org/abs/1910.02054</a> .</p>
+<p>For example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">oneflow</span> <span class="kn">as</span> <span class="nn">flow</span>
+
+<span class="k">class</span> <span class="nc">Graph</span><span class="p">(</span><span class="n">flow</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Graph</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">linear</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="bp">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">set_zero_redundancy_optimizer_mode</span><span class="p">(</span><span class="s2">"distributed_split"</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">build</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">linear</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+<span class="n">graph</span> <span class="o">=</span> <span class="n">Graph</span><span class="p">()</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>mode</strong> (<em>str</em>) – “distributed_split” or “non_distributed”. “distributed_split” mode
+will shard each optimizer state across devices. “non_distributed” mode
+will place each optimizer state to only one device.</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt id="oneflow.nn.graph.graph_config.GraphConfig.set_zero_redundancy_optimizer_min_size_after_split">
+<code class="sig-name descname"><span class="pre">set_zero_redundancy_optimizer_min_size_after_split</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#oneflow.nn.graph.graph_config.GraphConfig.set_zero_redundancy_optimizer_min_size_after_split" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the min size of optimizer state/grad/parameter after split.</p>
+<p>For example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">oneflow</span> <span class="kn">as</span> <span class="nn">flow</span>
+
+<span class="k">class</span> <span class="nc">Graph</span><span class="p">(</span><span class="n">flow</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Graph</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">linear</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="bp">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">set_zero_redundancy_optimizer_mode</span><span class="p">(</span><span class="s2">"distributed_split"</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">set_zero_redundancy_optimizer_min_size_after_split</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">build</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">linear</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+<span class="n">graph</span> <span class="o">=</span> <span class="n">Graph</span><span class="p">()</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>value</strong> (<em>int</em>) – min size value.</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt id="oneflow.nn.graph.graph_config.GraphConfig.enable_xla_jit">
+<code class="sig-name descname"><span class="pre">enable_xla_jit</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#oneflow.nn.graph.graph_config.GraphConfig.enable_xla_jit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Whether use xla_jit in xrt or not.</p>
+<p>When this option enable, oneflow will check all operators is supported by xla_jit or not. Clustering supported operators as subgraph, then runing subgraph by xla_jit.</p>
+<blockquote>
+<div><p>XLA: <a class="reference external" href="https://www.tensorflow.org/xla">https://www.tensorflow.org/xla</a></p>
+</div></blockquote>
+<p>If you need to use XLA to optimize the model running speed, you need to compile the XLA version of oneflow.</p>
+<p>Tutorial for build with XLA:</p>
+<p><a class="reference external" href="https://github.com/Oneflow-Inc/oneflow/blob/master/oneflow/xrt/README.md#build-with-xla">https://github.com/Oneflow-Inc/oneflow/blob/master/oneflow/xrt/README.md#build-with-xla</a></p>
+<p>For example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">oneflow</span> <span class="kn">as</span> <span class="nn">flow</span>
+
+<span class="k">class</span> <span class="nc">Graph</span><span class="p">(</span><span class="n">flow</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Graph</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">linear</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="bp">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">enable_xla_jit</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span> <span class="c1"># Use xla_jit in xrt.</span>
+    <span class="k">def</span> <span class="nf">build</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">linear</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+<span class="n">graph</span> <span class="o">=</span> <span class="n">Graph</span><span class="p">()</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>value</strong> (<em>bool</em><em>, </em><em>optional</em>) – The default vaule is True.</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt id="oneflow.nn.graph.graph_config.GraphConfig.enable_tensorrt">
+<code class="sig-name descname"><span class="pre">enable_tensorrt</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#oneflow.nn.graph.graph_config.GraphConfig.enable_tensorrt" title="Permalink to this definition">¶</a></dt>
+<dd><p>Whether use tensorrt in xrt or not.</p>
+<p>When this option enable, oneflow will check all operators is supported by tensorrt or not. Clustering supported operators as subgraph, then runing subgraph by tensorrt.</p>
+<blockquote>
+<div><p>TensorRT: <a class="reference external" href="https://developer.nvidia.com/tensorrt">https://developer.nvidia.com/tensorrt</a></p>
+</div></blockquote>
+<p>If you need to use TensorRT to optimize the model running speed, you need to compile the TensorRT version of oneflow.</p>
+<p>Tutorial for build with TensorRT:</p>
+<p><a class="reference external" href="https://github.com/Oneflow-Inc/oneflow/blob/master/oneflow/xrt/README.md#build-with-tensorrt">https://github.com/Oneflow-Inc/oneflow/blob/master/oneflow/xrt/README.md#build-with-tensorrt</a></p>
+<p>For example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">oneflow</span> <span class="kn">as</span> <span class="nn">flow</span>
+
+<span class="k">class</span> <span class="nc">Graph</span><span class="p">(</span><span class="n">flow</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Graph</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">linear</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="bp">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">enable_tensorrt</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span> <span class="c1"># Use tensorrt in xrt.</span>
+    <span class="k">def</span> <span class="nf">build</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">linear</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+<span class="n">graph</span> <span class="o">=</span> <span class="n">Graph</span><span class="p">()</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>value</strong> (<em>bool</em><em>, </em><em>optional</em>) – The default vaule is True.</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt id="oneflow.nn.graph.graph_config.GraphConfig.enable_openvino">
+<code class="sig-name descname"><span class="pre">enable_openvino</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#oneflow.nn.graph.graph_config.GraphConfig.enable_openvino" title="Permalink to this definition">¶</a></dt>
+<dd><p>Whether use openvino in xrt or not.</p>
+<p>When this option enable, oneflow will check all operators is supported by openvino or not. Clustering supported operators as subgraph, then runing subgraph by openvino.</p>
+<blockquote>
+<div><p>Please note that, openvino only support inference mode.</p>
+<p>OpenVINO: <a class="reference external" href="https://www.intel.com/content/www/us/en/developer/tools/openvino-toolkit/overview.html">https://www.intel.com/content/www/us/en/developer/tools/openvino-toolkit/overview.html</a></p>
+</div></blockquote>
+<p>It is also necessary to compile the XLA or TensorRT version of oneflow, tutorial: <a class="reference external" href="https://github.com/Oneflow-Inc/oneflow/tree/master/oneflow/xrt#readme">https://github.com/Oneflow-Inc/oneflow/tree/master/oneflow/xrt#readme</a></p>
+<p>For example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">oneflow</span> <span class="kn">as</span> <span class="nn">flow</span>
+
+<span class="k">class</span> <span class="nc">Graph</span><span class="p">(</span><span class="n">flow</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Graph</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">linear</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="bp">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">enable_openvino</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span> <span class="c1"># Use openvino in xrt.</span>
+    <span class="k">def</span> <span class="nf">build</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">linear</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+<span class="n">graph</span> <span class="o">=</span> <span class="n">Graph</span><span class="p">()</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>value</strong> (<em>bool</em><em>, </em><em>optional</em>) – The default vaule is True.</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt id="oneflow.nn.graph.graph_config.GraphConfig.enable_cudnn_conv_heuristic_search_algo">
+<code class="sig-name descname"><span class="pre">enable_cudnn_conv_heuristic_search_algo</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#oneflow.nn.graph.graph_config.GraphConfig.enable_cudnn_conv_heuristic_search_algo" title="Permalink to this definition">¶</a></dt>
+<dd><p>Whether enable cudnn conv operatioin to use heuristic search algorithm.</p>
+<p>For example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">oneflow</span> <span class="kn">as</span> <span class="nn">flow</span>
+
+<span class="k">class</span> <span class="nc">Graph</span><span class="p">(</span><span class="n">flow</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Graph</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">m</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span> <span class="n">stride</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">padding</span><span class="o">=</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="n">dilation</span><span class="o">=</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+        <span class="c1"># Do not enable the cudnn conv operation to use the heuristic search algorithm.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">enable_cudnn_conv_heuristic_search_algo</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">build</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">m</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+<span class="n">graph</span> <span class="o">=</span> <span class="n">Graph</span><span class="p">()</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>mode</strong> (<em>bool</em><em>, </em><em>optional</em>) – The default vaule is True.</p>
+</dd>
+</dl>
+</dd></dl>
+</dd></dl>
+<dl class="py class">
+<dt id="oneflow.nn.graph.block_config.BlockConfig">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">oneflow.nn.graph.block_config.</span></code><code class="sig-name descname"><span class="pre">BlockConfig</span></code><a class="headerlink" href="#oneflow.nn.graph.block_config.BlockConfig" title="Permalink to this definition">¶</a></dt>
+<dd><p>Configurations on Module Block in nn.Graph.</p>
+<p>When an nn.Module is added into an nn.Graph, it is wrapped into a ModuleBlock. You can set or get optimization configs on an nn.Module with it’s <cite>ModuleBlock.config</cite>.</p>
+<dl class="py method">
+<dt id="oneflow.nn.graph.block_config.BlockConfig.stage_id">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">stage_id</span></code><a class="headerlink" href="#oneflow.nn.graph.block_config.BlockConfig.stage_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set/Get stage id of nn.Module/ModuleBlock in pipeline parallelism.</p>
+<p>When calling stage_id(value: int = None), set different module’s stage id to hint the graph preparing right num of buffers in pipeline.</p>
+<p>For example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># m_stage0 and m_stage1 are the two pipeline stages of the network, respectively.</span>
+<span class="c1"># We can set Stage ID by setting the config.stage_id attribute of Module.</span>
+<span class="c1"># The Stage ID is numbered starting from 0 and increasing by 1.</span>
+<span class="bp">self</span><span class="o">.</span><span class="n">module_pipeline</span><span class="o">.</span><span class="n">m_stage0</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">stage_id</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="bp">self</span><span class="o">.</span><span class="n">module_pipeline</span><span class="o">.</span><span class="n">m_stage1</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">stage_id</span> <span class="o">=</span> <span class="mi">1</span>
+</pre></div>
+</div>
+</dd></dl>
+<dl class="py method">
+<dt id="oneflow.nn.graph.block_config.BlockConfig.activation_checkpointing">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">activation_checkpointing</span></code><a class="headerlink" href="#oneflow.nn.graph.block_config.BlockConfig.activation_checkpointing" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set/Get whether do activation checkpointing in this nn.Module.</p>
+<p>For example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">oneflow</span> <span class="kn">as</span> <span class="nn">flow</span>
+
+<span class="k">class</span> <span class="nc">Graph</span><span class="p">(</span><span class="n">flow</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Graph</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">linear1</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="bp">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">linear2</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="bp">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">linear1</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">activation_checkpointing</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">linear2</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">activation_checkpointing</span> <span class="o">=</span> <span class="bp">True</span>
+
+    <span class="k">def</span> <span class="nf">build</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="n">y_pred</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">linear1</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="n">y_pred</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">linear2</span><span class="p">(</span><span class="n">y_pred</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">y_pred</span>
+
+<span class="n">graph</span> <span class="o">=</span> <span class="n">Graph</span><span class="p">()</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -352,12 +729,12 @@ the graph structure.</p>
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="linalg.html">
+          <a class="next-page" href="image.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">oneflow.linalg</div>
+                <div class="title">oneflow.nn.image</div>
               </div>
               <svg><use href="#svg-arrow-right"></use></svg>
             </a>
@@ -403,7 +780,7 @@ the graph structure.</p>
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">oneflow.nn.Graph</a><ul>
-<li><a class="reference internal" href="#base-class-for-running-neural-networks-in-graph-mode">Base class for running neural networks in Graph Mode.</a></li>
+<li><a class="reference internal" href="#base-class-for-running-neural-networks-in-static-graph-mode">Base class for running neural networks in Static Graph Mode.</a></li>
 </ul>
 </li>
 </ul>
@@ -420,5 +797,7 @@ the graph structure.</p>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
+    <script src="_static/clipboard.min.js"></script>
+    <script src="_static/copybutton.js"></script>
     <script src="_static/scripts/main.js?digest=e931d09b2a40c1bb82b542effe772014573baf67"></script></body>
 </html>
